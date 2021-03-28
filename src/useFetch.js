@@ -7,7 +7,6 @@ const useFetch = (url) => {
 
   useEffect(() => {
     const abortCont = new AbortController();
-    console.log("use Effect running");
     fetch(url, { signal: abortCont.signal })
       .then((response) => {
         if (!response.ok) throw new Error("Unable to connect");
@@ -23,10 +22,10 @@ const useFetch = (url) => {
           console.log("fetch aborted");
         } else {
           setIsLoading(false);
-          console.log(e.message);
+          setError(e.message);
         }
       });
-    return abortCont.abort();
+    return () => abortCont.abort();
   }, [url]);
 
   return { data, error, isLoading };
