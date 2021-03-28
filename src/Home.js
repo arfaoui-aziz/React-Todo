@@ -1,39 +1,23 @@
 import BlogList from "./BlogList";
-import { useState, useEffect } from "react";
+import useFetch from "./useFetch";
 
 //******** Home Component */
 const Home = () => {
-  const [blogs, setBlogs] = useState(null);
+  const { data: blogs, error, isLoading } = useFetch(
+    "http://localhost:5000/blogs"
+  );
 
-  const [name, setName] = useState("aziz");
-
-  const handleDelete = (id) => {
-    const newBlogs = blogs.filter((blog) => blog.id !== id);
-    setBlogs(newBlogs);
-  };
-
-  useEffect(() => {
-    console.log("use Effect running");
-    fetch("http://localhost:5000/blogs")
-      .then((response) => response.json())
-      .then((data) => setBlogs(data));
-  }, []);
+  // const handleDelete = (id) => {
+  //   const newBlogs = blogs.filter((blog) => blog.id !== id);
+  //   setBlogs(newBlogs);
+  // };
 
   //***** Return*/
   return (
     <div className="home">
-      {blogs && (
-        <BlogList blogs={blogs} title="All Blogs" handleDelete={handleDelete} />
-      )}
-      {blogs && (
-        <BlogList
-          blogs={blogs.filter((blog) => blog.author === "mario")}
-          title="Mario's Blogs"
-          handleDelete={handleDelete}
-        />
-      )}
-      <button onClick={() => setName("luigi")}>change name</button>
-      <p>{name}</p>
+      {error && <div>{error}</div>}
+      {isLoading && <div>Loading ....</div>}
+      {blogs && <BlogList blogs={blogs} title="All Blogs" />}
     </div>
   );
 };
