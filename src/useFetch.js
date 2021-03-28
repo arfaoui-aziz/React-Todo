@@ -6,8 +6,9 @@ const useFetch = (url) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const abortCont = new AbortController();
     console.log("use Effect running");
-    fetch(url)
+    fetch(url, { signal: abortCont.signal })
       .then((response) => {
         if (!response.ok) throw new Error("Unable to connect");
         return response.json();
@@ -18,9 +19,14 @@ const useFetch = (url) => {
         setError(null);
       })
       .catch((e) => {
-        setIsLoading(false);
-        console.log(e.message);
+        if (e.name === "AbortError") {
+          console.log("fetch aborted");
+        } else {
+          setIsLoading(false);
+          console.log(e.message);
+        }
       });
+    return abortCont.abort();
   }, [url]);
 
   return { data, error, isLoading };
